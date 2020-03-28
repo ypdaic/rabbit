@@ -1,10 +1,10 @@
 spring:
   rabbitmq:
-    publisher-confirms: true #¿ªÆôÉú³ÉÕßÈ·ÈÏ£¬ P -> Exchange
-    publisher-returns: true #¿ªÆôÊ§°ÜÍ¨Öª£¬Exchange -> Queue
+    publisher-confirms: true #å¼€å¯ç”Ÿæˆè€…ç¡®è®¤ï¼Œ P -> Exchange
+    publisher-returns: true #å¼€å¯å¤±è´¥é€šçŸ¥ï¼ŒExchange -> Queue
     listener:
       direct:
-        acknowledge-mode: manual #Ïû·ÑÕßÊÖ¶¯È·ÈÏ
-        prefetch: 100 #Ïû·ÑÕßÔ¤È¡´óĞ¡
+        acknowledge-mode: manual #æ¶ˆè´¹è€…æ‰‹åŠ¨ç¡®è®¤
+        prefetch: 100 #æ¶ˆè´¹è€…é¢„å–å¤§å°
     template:
-      mandatory: true #Ê§°ÜÍ¨Öª  // ´¥·¢setReturnCallback»Øµ÷±ØĞëÉèÖÃmandatory=true, ·ñÔòExchangeÃ»ÓĞÕÒµ½Queue¾Í»á¶ªÆúµôÏûÏ¢, ¶ø²»»á´¥·¢»Øµ÷
+      mandatory: true #å¤±è´¥é€šçŸ¥  // è§¦å‘setReturnCallbackå›è°ƒå¿…é¡»è®¾ç½®mandatory=true, å¦åˆ™Exchangeæ²¡æœ‰æ‰¾åˆ°Queueå°±ä¼šä¸¢å¼ƒæ‰æ¶ˆæ¯, è€Œä¸ä¼šè§¦å‘å›è°ƒ
