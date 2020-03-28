@@ -1,0 +1,10 @@
+spring:
+  rabbitmq:
+    publisher-confirms: true #开启生成者确认， P -> Exchange
+    publisher-returns: true #开启失败通知，Exchange -> Queue
+    listener:
+      direct:
+        acknowledge-mode: manual #消费者手动确认
+        prefetch: 100 #消费者预取大小
+    template:
+      mandatory: true #失败通知  // 触发setReturnCallback回调必须设置mandatory=true, 否则Exchange没有找到Queue就会丢弃掉消息, 而不会触发回调
