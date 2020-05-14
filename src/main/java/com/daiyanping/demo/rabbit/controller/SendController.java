@@ -60,6 +60,8 @@ public class SendController {
 
     /**
      * 当发送的消息无法路由到队列时，会触发handleReturn的回调，进而触发ReturnCallback的回调，但是要设置mandatory为true
+     *
+     * unack数量等于PrefetchCount时,不会收到消息
      * @return
      */
     @PostMapping("/test2")
