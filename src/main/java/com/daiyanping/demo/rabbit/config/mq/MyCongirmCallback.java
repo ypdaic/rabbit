@@ -16,14 +16,20 @@ public class MyCongirmCallback implements RabbitTemplate.ConfirmCallback {
     @Autowired
     private IMsgLogService msgLogService;
 
+    /**
+     * 如果设置了消息持久化，那么ack= true是在消息持久化完成后，就是存到硬盘上之后再发送的
+     * @param correlationData
+     * @param ack
+     * @param cause
+     */
     @Override
     public void confirm(CorrelationData correlationData, boolean ack, String cause) {
-        if (ack) {
-            log.info("消息成功发送到Exchange");
-            String msgId = correlationData.getId();
-            msgLogService.updateStatus(msgId, MsgLog.MsgLogStatus.CONSUMED_SUCCESS.getValue());
-        } else {
-            log.info("消息发送到Exchange失败, {}, cause: {}", correlationData, cause);
-        }
+//        if (ack) {
+////            log.info("消息成功发送到Exchange");
+//            String msgId = correlationData.getId();
+//            msgLogService.updateStatus(msgId, MsgLog.MsgLogStatus.CONSUMED_SUCCESS.getValue());
+//        } else {
+//            log.info("消息发送到Exchange失败, {}, cause: {}", correlationData, cause);
+//        }
     }
 }

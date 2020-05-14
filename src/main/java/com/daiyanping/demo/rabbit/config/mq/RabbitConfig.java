@@ -1,10 +1,7 @@
 package com.daiyanping.demo.rabbit.config.mq;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.core.Binding;
-import org.springframework.amqp.core.BindingBuilder;
-import org.springframework.amqp.core.DirectExchange;
-import org.springframework.amqp.core.Queue;
+import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
@@ -28,6 +25,7 @@ public class RabbitConfig {
         rabbitTemplate.setMessageConverter(converter());
         rabbitTemplate.setConfirmCallback(myCongirmCallback);
         rabbitTemplate.setReturnCallback(myReturnCallback);
+        rabbitTemplate.setMandatory(true);
         return rabbitTemplate;
     }
 
@@ -64,18 +62,21 @@ public class RabbitConfig {
     @Bean
     public Queue mailQueue() {
         // 队列进行持久化
-        return new Queue(MAIL_QUEUE_NAME, true);
+        return new Queue(MAIL_QUEUE_NAME, true, false, false);
     }
 
     @Bean
     public DirectExchange mailExchange() {
         // 交换器进行持久化，并且该exchange没有被使用时不自动删除
         return new DirectExchange(MAIL_EXCHANGE_NAME, true, false);
+//        return new FanoutExchange(MAIL_EXCHANGE_NAME, false, true);
     }
 
     @Bean
     public Binding mailBinding() {
         return BindingBuilder.bind(mailQueue()).to(mailExchange()).with(MAIL_ROUTING_KEY_NAME);
+//        return BindingBuilder.bind(mailQueue()).to(mailExchange());
     }
+
 
 }

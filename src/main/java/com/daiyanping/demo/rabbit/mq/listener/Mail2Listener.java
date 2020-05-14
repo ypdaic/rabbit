@@ -1,9 +1,6 @@
 package com.daiyanping.demo.rabbit.mq.listener;
 
 import com.daiyanping.demo.rabbit.config.mq.RabbitConfig;
-import com.daiyanping.demo.rabbit.mq.BaseConsumer;
-import com.daiyanping.demo.rabbit.mq.BaseConsumerProxy;
-import com.daiyanping.demo.rabbit.mq.consumer.MailConsumer;
 import com.daiyanping.demo.rabbit.service.IMsgLogService;
 import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
@@ -17,7 +14,7 @@ import java.util.concurrent.TimeoutException;
 
 @Slf4j
 //@Component
-public class MailListener {
+public class Mail2Listener {
 
 //    @Autowired
 //    private MailConsumer mailConsumer;
@@ -32,9 +29,13 @@ public class MailListener {
 //        if (null != proxy) {
 //            proxy.consume(message, channel);
 //        }
-//        log.info("Mail2Listener消费者消费的消息:{}", new String(message.getBody()));
-        System.out.println("Mail2Listener消费者消费的消息:" + new String(message.getBody()));
-        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        log.info("Mail2Listener消费者消费的消息，8081:{}", message);
+//        try {
+//            channel.close();
+//        } catch (TimeoutException e) {
+//            e.printStackTrace();
+//        }
+//        channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
     }
 
 }
