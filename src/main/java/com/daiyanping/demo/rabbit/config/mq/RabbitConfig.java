@@ -4,6 +4,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
+import org.springframework.amqp.rabbit.transaction.RabbitTransactionManager;
 import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +27,7 @@ public class RabbitConfig {
         rabbitTemplate.setConfirmCallback(myCongirmCallback);
         rabbitTemplate.setReturnCallback(myReturnCallback);
         rabbitTemplate.setMandatory(true);
+        rabbitTemplate.setChannelTransacted(true);
         return rabbitTemplate;
     }
 
@@ -59,6 +61,7 @@ public class RabbitConfig {
     public static final String MAIL_EXCHANGE_NAME = "mail.exchange";
     public static final String MAIL_ROUTING_KEY_NAME = "mail.routing.key";
 
+
     @Bean
     public Queue mailQueue() {
         // 队列进行持久化
@@ -78,5 +81,15 @@ public class RabbitConfig {
 //        return BindingBuilder.bind(mailQueue()).to(mailExchange());
     }
 
+    /**
+     * 当给AbstractRabbitListenerContainerFactory 指定事物管理器后，消费者就会开启事物进行消费，业务异常后会进行回滚
+     * @param connectionFactory
+     * @return
+     */
+    @Bean
+    RabbitTransactionManager getRabbitTransactionManager(ConnectionFactory connectionFactory) {
+        RabbitTransactionManager rabbitTransactionManager = new RabbitTransactionManager(connectionFactory);
+        return rabbitTransactionManager;
+    }
 
 }

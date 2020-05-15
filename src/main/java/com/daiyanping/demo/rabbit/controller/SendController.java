@@ -15,6 +15,7 @@ import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -61,7 +62,7 @@ public class SendController {
     /**
      * 当发送的消息无法路由到队列时，会触发handleReturn的回调，进而触发ReturnCallback的回调，但是要设置mandatory为true
      *
-     * unack数量等于PrefetchCount时,不会收到消息
+     *
      * @return
      */
     @PostMapping("/test2")
@@ -80,6 +81,7 @@ public class SendController {
      * @return
      */
     @PostMapping("/test3")
+    @Transactional(transactionManager = "getRabbitTransactionManager")
     public ServerResponse test3() {
         String msgId = UUID.fastUUID().toString();
 
@@ -99,7 +101,7 @@ public class SendController {
 //        }
 
 
-        for (int i = 0; i < 1000; i++) {
+        for (int i = 0; i < 2000; i++) {
             String s = "test" + i;
             System.out.println("发送的消息: " + s);
             rabbitTemplate.convertAndSend(RabbitConfig.MAIL_EXCHANGE_NAME, RabbitConfig.MAIL_ROUTING_KEY_NAME, s, correlationData);// 发送消息

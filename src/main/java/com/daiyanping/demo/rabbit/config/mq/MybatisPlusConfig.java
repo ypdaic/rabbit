@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.extension.plugins.PaginationInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.PerformanceInterceptor;
 import com.baomidou.mybatisplus.extension.spring.MybatisSqlSessionFactoryBean;
 import com.daiyanping.demo.rabbit.DB.MyDynamicDataSource;
+import lombok.AllArgsConstructor;
 import org.apache.ibatis.plugin.Interceptor;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -16,6 +17,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Primary;
 import org.springframework.context.annotation.Profile;
 import org.springframework.jdbc.datasource.DataSourceTransactionManager;
+import org.springframework.transaction.PlatformTransactionManager;
+import org.springframework.transaction.annotation.TransactionManagementConfigurer;
 import org.springframework.transaction.support.TransactionTemplate;
 
 import javax.sql.DataSource;
@@ -105,5 +108,25 @@ public class MybatisPlusConfig {
         // 将sql写入log文件，不只是在控制台打印，还需要结合druid的merge-sql功能，才能打印完整的sql
         performanceInterceptor.setWriteInLog(true);
         return performanceInterceptor;
+    }
+
+    /**
+     * 直接事务默认的的事物管理器
+     * @return
+     */
+    @Bean
+    TransactionManagementConfigurer getTransactionManagementConfigurer() {
+        return new MyTransactionManagementConfigurer(getDataSourceTransactionManager());
+    }
+
+    @AllArgsConstructor
+    public static class MyTransactionManagementConfigurer implements TransactionManagementConfigurer {
+
+        PlatformTransactionManager platformTransactionManager;
+
+        @Override
+        public PlatformTransactionManager annotationDrivenTransactionManager() {
+            return platformTransactionManager;
+        }
     }
 }

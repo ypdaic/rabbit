@@ -11,10 +11,11 @@ spring:
       mandatory: true #失败通知  // 触发setReturnCallback回调必须设置mandatory=true, 否则Exchange没有找到Queue就会丢弃掉消息, 而不会触发回调
     cache:
       channel:
-        size: 2 # 通道数量
-        checkout-timeout: 30000  #如果加上检查后，size必须要大于1，否则发送消息就是会报No available channels，因为创建消费者后，channel不会关闭，permits = this.checkoutPermits.get(connection); 至少会被消耗一个
+        size: 1 # 通道数量
+        checkout-timeout: 30000  #如果加上检查后，size必须要大于1，否则发送消息就是会报No available channels，因为创建消费者后，channel不会关闭，相当于每个消费者一个自己的channel，不是共享的，permits = this.checkoutPermits.get(connection); 至少会被消耗一个
       connection:
-        mode: channel #缓存channel 连接只会有一个
+        mode: connection #当mode 为connection时，只有在连接关闭时才会将该连接归还
+        #mode: channel #缓存channel 连接只会有一个
     host: 127.0.0.1
     port: 5672
     username: root
