@@ -18,6 +18,51 @@
         <java.version>1.8</java.version>
     </properties>
 
+    <profiles>
+        <profile>
+            <id>dev</id>
+            <!--默认激活dev配置-->
+            <activation>
+                <activeByDefault>true</activeByDefault>
+            </activation>
+            <properties>
+                <env>dev</env>
+                <mode>cluster</mode>
+            </properties>
+            <!--如果properties很多，可以通过下面的方法进行加载,如果不存在配置文件
+            则需要关闭该配置，否则编译不过-->
+            <!--<build>-->
+            <!--<filters>-->
+            <!--<filter>config-dev.properties</filter>-->
+            <!--</filters>-->
+            <!--</build>-->
+        </profile>
+
+
+        <profile>
+            <id>test</id>
+            <!--默认激活dev配置-->
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <env>test</env>
+                <mode>cluster</mode>
+            </properties>
+        </profile>
+
+        <profile>
+            <id>provider</id>
+            <!--默认激活dev配置-->
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <properties>
+                <env>provider</env>
+            </properties>
+        </profile>
+    </profiles>
+
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
@@ -110,6 +155,23 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
             </plugin>
         </plugins>
+        <resources>
+            <resource>
+                <directory>src/main/resources</directory>
+                <!--filtering为true 表示用环境变量替换配置值-->
+                <!--filtering为ture,只会将被过滤的文件打到jar中，其他配置
+                文件也想要打到jar包中，就必须在配置一个resource-->
+                <filtering>true</filtering>
+                <!--开启过滤，并对application.yml文件中包含${key}的配置
+                将使用maven配置的值进行替换-->
+                <!--includes表示只打包指定的文件-->
+                <includes>
+                    <include>application.yml</include>
+                    <include>application-${env}.yml</include>
+                </includes>
+            </resource>
+
+        </resources>
     </build>
 
 </project>

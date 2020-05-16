@@ -9,6 +9,7 @@ import org.springframework.amqp.support.converter.Jackson2JsonMessageConverter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.Primary;
 
 @Configuration
 @Slf4j
@@ -20,8 +21,29 @@ public class RabbitConfig {
     @Autowired
     MyReturnCallback myReturnCallback;
 
+    /**
+     * 不支持connection,channel绑定到当前线程上
+     * @param connectionFactory
+     * @return
+     */
     @Bean
+    @Primary
     public RabbitTemplate rabbitTemplate(ConnectionFactory connectionFactory) {
+        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        rabbitTemplate.setMessageConverter(converter());
+        rabbitTemplate.setConfirmCallback(myCongirmCallback);
+        rabbitTemplate.setReturnCallback(myReturnCallback);
+        rabbitTemplate.setMandatory(true);
+        return rabbitTemplate;
+    }
+
+    /**
+     * 将connection，channel 绑定到当前线程上，而不开启rabbitmq的事务功能
+     * @param connectionFactory
+     * @return
+     */
+    @Bean
+    public RabbitTemplate channelRabbitTemplate(ConnectionFactory connectionFactory) {
         RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(converter());
         rabbitTemplate.setConfirmCallback(myCongirmCallback);
@@ -88,7 +110,7 @@ public class RabbitConfig {
      */
     @Bean
     RabbitTransactionManager getRabbitTransactionManager(ConnectionFactory connectionFactory) {
-        RabbitTransactionManager rabbitTransactionManager = new RabbitTransactionManager(connectionFactory);
+        MyRabbitTransactionManager rabbitTransactionManager = new MyRabbitTransactionManager(connectionFactory);
         return rabbitTransactionManager;
     }
 

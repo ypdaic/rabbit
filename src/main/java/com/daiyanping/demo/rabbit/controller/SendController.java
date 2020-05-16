@@ -1,6 +1,7 @@
 package com.daiyanping.demo.rabbit.controller;
 
 import cn.hutool.core.lang.UUID;
+import com.daiyanping.demo.rabbit.annotation.RabbitChannel;
 import com.daiyanping.demo.rabbit.base.ResponseCode;
 import com.daiyanping.demo.rabbit.base.ServerResponse;
 import com.daiyanping.demo.rabbit.config.mq.RabbitConfig;
@@ -8,13 +9,10 @@ import com.daiyanping.demo.rabbit.entity.Mail;
 import com.daiyanping.demo.rabbit.entity.MsgLog;
 import com.daiyanping.demo.rabbit.service.IMsgLogService;
 import com.daiyanping.demo.rabbit.util.MessageHelper;
-import org.springframework.amqp.AmqpException;
-import org.springframework.amqp.core.Message;
-import org.springframework.amqp.core.MessageDeliveryMode;
-import org.springframework.amqp.core.MessagePostProcessor;
 import org.springframework.amqp.rabbit.connection.CorrelationData;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.Errors;
 import org.springframework.validation.annotation.Validated;
@@ -25,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class SendController {
 
     @Autowired
+    @Qualifier("channelRabbitTemplate")
     RabbitTemplate rabbitTemplate;
 
     @Autowired
@@ -81,6 +80,9 @@ public class SendController {
      * @return
      */
     @PostMapping("/test3")
+    /**
+     * 使用事务后，channel会使用开启事务，此时 生成者确认模式是不能开启的，否则报错
+     */
     @Transactional(transactionManager = "getRabbitTransactionManager")
     public ServerResponse test3() {
         String msgId = UUID.fastUUID().toString();
@@ -102,6 +104,44 @@ public class SendController {
 
 
         for (int i = 0; i < 2000; i++) {
+            String s = "test" + i;
+            System.out.println("发送的消息: " + s);
+            rabbitTemplate.convertAndSend(RabbitConfig.MAIL_EXCHANGE_NAME, RabbitConfig.MAIL_ROUTING_KEY_NAME, s, correlationData);// 发送消息
+        }
+
+        return ServerResponse.success(ResponseCode.MAIL_SEND_SUCCESS.getMsg());
+
+    }
+
+    /**
+     * rabbitTemplate 发送的消息默认是持久化的
+     * @return
+     */
+    @PostMapping("/test4")
+    /**
+     * 使用同一个channel
+     */
+    @RabbitChannel
+    public ServerResponse test4() {
+        String msgId = UUID.fastUUID().toString();
+
+        CorrelationData correlationData = new CorrelationData(msgId);
+//        // 设置消息不是持久化的
+//        MessagePostProcessor messagePostProcessor = new MessagePostProcessor() {
+//            @Override
+//            public Message postProcessMessage(Message message) throws AmqpException {
+//                message.getMessageProperties().setDeliveryMode(MessageDeliveryMode.NON_PERSISTENT);
+//                return message;
+//
+//            }
+//        };
+//        for (int i = 0; i < 1000; i++) {
+//
+//            rabbitTemplate.convertAndSend(RabbitConfig.MAIL_EXCHANGE_NAME, RabbitConfig.MAIL_ROUTING_KEY_NAME, "test" + i, messagePostProcessor, correlationData);// 发送消息
+//        }
+
+
+        for (int i = 0; i < 5000; i++) {
             String s = "test" + i;
             System.out.println("发送的消息: " + s);
             rabbitTemplate.convertAndSend(RabbitConfig.MAIL_EXCHANGE_NAME, RabbitConfig.MAIL_ROUTING_KEY_NAME, s, correlationData);// 发送消息

@@ -55,6 +55,9 @@ public class MailListener {
         }
 //        System.out.println("Mail2Listener消费者消费的消息:" + new String(message.getBody()));
         channel.basicAck(message.getMessageProperties().getDeliveryTag(), false);
+        if (andIncrement == 4999) {
+            atomicInteger.set(0);
+        }
     }
 
 }
