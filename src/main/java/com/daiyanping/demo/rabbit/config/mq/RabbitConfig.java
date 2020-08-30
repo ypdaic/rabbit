@@ -1,5 +1,6 @@
 package com.daiyanping.demo.rabbit.config.mq;
 
+import com.rabbitmq.client.Channel;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.core.*;
 import org.springframework.amqp.rabbit.connection.ConnectionFactory;
@@ -44,7 +45,7 @@ public class RabbitConfig {
      */
     @Bean
     public RabbitTemplate channelRabbitTemplate(ConnectionFactory connectionFactory) {
-        RabbitTemplate rabbitTemplate = new RabbitTemplate(connectionFactory);
+        RabbitTemplate rabbitTemplate = new MyRabbitMqTemplate(connectionFactory);
         rabbitTemplate.setMessageConverter(converter());
         rabbitTemplate.setConfirmCallback(myCongirmCallback);
         rabbitTemplate.setReturnCallback(myReturnCallback);
@@ -112,6 +113,18 @@ public class RabbitConfig {
     RabbitTransactionManager getRabbitTransactionManager(ConnectionFactory connectionFactory) {
         MyRabbitTransactionManager rabbitTransactionManager = new MyRabbitTransactionManager(connectionFactory);
         return rabbitTransactionManager;
+    }
+
+    public static class MyRabbitMqTemplate extends RabbitTemplate {
+
+        public MyRabbitMqTemplate(ConnectionFactory connectionFactory) {
+            super.setConnectionFactory(connectionFactory);
+        }
+
+        @Override
+        protected boolean isChannelLocallyTransacted(Channel channel) {
+            return false;
+        }
     }
 
 }

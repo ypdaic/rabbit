@@ -16,7 +16,7 @@ spring:
       connection:
 #        mode: connection #当mode 为connection时，只有在连接关闭时才会将该连接归还
         mode: channel #缓存channel 连接只会有一个
-    host: 192.168.109.128
+    host: 192.168.109.129
     port: 5672
     username: root
     password: test1234
@@ -26,9 +26,9 @@ spring:
 druid:
   db1:
     filters: stat,wall #合并sql
-    url: jdbc:mysql://192.168.109.128:3308/test
+    url: jdbc:mysql://192.168.109.129:3309/test
     username: root
-    password: test1234
+    password: 123456
     driver-class-name: com.mysql.jdbc.Driver
     initialSize: 0 #初始建立物理连接的数量
     minIdle: 5 #最小连接数
@@ -44,9 +44,9 @@ druid:
     keepAlive: false #连接池中的minIdle数量以内的连接，空闲时间超过minEvictableIdleTimeMillis，则会执行keepAlive操作。
   db2:
     filters: stat,wall #合并sql
-    url: jdbc:mysql://192.168.109.128:3308/test2
+    url: jdbc:mysql://192.168.109.129:3309/test2
     username: root
-    password: test1234
+    password: 123456
     driver-class-name: com.mysql.jdbc.Driver
     initialSize: 0 #初始建立物理连接的数量
     minIdle: 5 #最小连接数

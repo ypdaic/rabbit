@@ -145,6 +145,7 @@ public class SendController {
             String s = "test" + i;
             System.out.println("发送的消息: " + s);
             rabbitTemplate.convertAndSend(RabbitConfig.MAIL_EXCHANGE_NAME, RabbitConfig.MAIL_ROUTING_KEY_NAME, s, correlationData);// 发送消息
+            throw new RuntimeException();
         }
 
         return ServerResponse.success(ResponseCode.MAIL_SEND_SUCCESS.getMsg());
